@@ -1,6 +1,6 @@
 # Chapter 1: Golems of Prague
 
-### Section 1.2.1
+### Section 1.2
 **Defintions**
 - Hypothesis (high-level/vague) - an idea or belief we want to evaluate
   - ex: My car is out of gas
@@ -43,9 +43,30 @@ Test:
 
 > You turn the key, and the car starts.
 
-### Section 1.2.2
+**Core Idea**
+
+> Falsification doesn't work because hypotheses themselves are too difficult to represent in a model. There are too many relations ("many models correspond to the same hypothesis, and many hypotheses correspond to a single model").
+>
+> Even the aspect of measuring the data that we use to falsify a model is complex and not concrete.
+
+We've already shown the complex relations above in an example, but to the point about measurement, even if data "rejects" a model it could be debated that (1.) the data is noisy (2.) the wrong measurement was made or (3.) assumptions about the variance or distribution are incorrect.
+
+EX:
+
+A feature for a new app is being launched.
+
+> $H_0$: The feature has no effect - users come back at the same rate as before."
+
+After developing a process model, when a statistical test is selected (t-test, regression etc.), assumptions are inherently made.
+
+> Think: the variation in user behavior follows a normal distribution or is stable across different demographics or the user decisions are independent of each other.
+
+We could easily think of how any of these could be violated in certain situations.
+
+These are assumptions that the statistical model might rely on, and thus if they are broken our model of choice provides no guarantees.
+
+From the book, in page 4
 
 
-### Questions:
-- What is a process model?
-- 
+McElreath gives more [examples](https://civil.colorado.edu/~balajir/CVEN6833/bayes-resources/RM-StatRethink-Bayes.pdf#page=21) to get across the idea that the falsification approach is heavily flawed, but they are intuitive to understand and further enforce the ideas from above.
+
