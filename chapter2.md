@@ -87,3 +87,140 @@ plausibility of p *after* $D_{new}$ = (ways $p$ can produce $D_{new}$ * prior pl
 - Prior Probability: prior plausibility of a specific parameter
 - Posterior Probability: new, updated plausibility of a parameter
 
+### Section 2.2
+
+EX: Given a globe representing Earth, the following strategy is adopted to determine how much of the surface is water: Toss the globe in the air and when you catch it, record where your hands are Water or Land.
+
+In designing a Bayesian model, the author gives a three step loop:
+
+1. Data Story
+> Define our experiment to better understand how we're collecting our data/information.
+
+Proportion of the surface that is water is $p$.
+One toss has probability $p$ of producing a Water and $1-p$ of producing Land.
+Each toss is independent of the others.
+
+This step is more specific than the original hypothesis. Leading us to think more deeply about what is involved in the question.
+
+We must consider how we will sample and how we will measure our data.
+
+Our ultimate goal is to resolve ambiguity in how we handle the design of the experiment.
+
+**Definitions:**
+- Sampling: which observations you gather
+  - EX: tossing the globe and catching it
+- Measuring: what you record from those observations
+  - EX: determine wheter the sampled point is Water or Land by looking at where your hand is touching blue or green
+
+
+2. Update
+> Re-evaluate our conjectures as we collect information.
+
+We start off with our prior plausibilities as we have done before.
+
+For this example, our priors are uniform, meaning for every $p$ (potential percentage of the globe that is water) there is the same plausibility of being true.
+
+Now, if we were to toss the globe once and land on water, we update our priors to become our posteriors.
+
+Now, we know that $p = 0$ has a plausibility of zero since we have seen some water the would must contain > 0% water. Additionally, $p > 50%$ has increased in plausibility since we have technically seen no evidence of land.
+
+The author points out another difference at this point between typical statistical methods and Bayesian
+
+In classical methods, there is usually a sample size requirement to be able to obtain a mathematically correct estimator.
+
+In Bayesian, the amount of data does not affect the validity of our model. It just means we are more reliant on our original priors. This can still mislead us.
+
+**Defintions:**
+- Estimator: a rule or formula in classical stats that is applied to the data to get an estimate of some unknown quantity
+  - EX: sample mean or sample std dev <- these methods are only "guaranteed" to be correct when the sample size is large
+  - the difference from Bayesian is that it is always valid
+    - "Given what I knew before, and what I just saw, here's what I believe now" -> the math is always coherent
+
+
+3. Evaluate
+> Make sure that shit is right.
+
+No point in going too in detail here... the author says we go into specifics later.
+
+### Section 2.3
+> 3 Main Components: Likelihood, Parameters, Priors
+
+1. Likelihood
+> The score of our hypothesis based on how well it explains the data we've experienced.
+
+Given some prior $p$ that says 50% of the world is water, we use our likelihood function to determine how "likely" that reality is.
+
+**Defintions**
+- Likelihood function: tool to score our hypotheses
+  - From our marble example before, it tells us the relative number of ways each conjecture could produce an observation.
+  - EX: The binomial distribution is a good model for a binary method like our globe tossing scenario.
+    - this is because each toss is independent of each other AND the probability is the same on each toss
+    - if the globe is tossed 9 times and we get 6 waters we can do the equation below
+
+$$
+L(p) = P(\text{6 waters in 9 tosses} \mid p) = \binom{9}{6} p^6 (1 - p)^3
+$$
+
+Remember this equation as it is just one part of the larger equation we use to determine our final result.
+
+Likelihood is often represented in the following way:
+$$
+L(p|w,n)
+$$
+
+Which translates to "the likelihood of $p$ given the observations $w$ and the number of data points $n$"
+
+1. Parameters
+> Represent our conjectures from before.
+
+The $p$, $w$, and $n$ are all parameters.
+
+Parameters can be estimated from data.
+
+In the globe toss, $n$ and $w$ are the data and we try to estimate $p$, but this is not always the case.
+
+3. Priors
+> The initial plausibility we define for each parameter that we wish to estimate.
+
+This is represented as a probability distribution. Thus, it needs:
+1. to cover all possible values the parameter could take
+2. assign a plausibility to each of those values
+3. be normalized (add up to zero)
+
+In the examples above we used uniform priors, meaning we gave equal plausibility to each possible value, which is represented by a uniform distribution.
+
+This allows the engineer to use any information they have about the parameter ahead of time, ultimately given guard rails (constraints) for the parameter estimation.
+
+When designing an experiment, the prior is just another aspect that needs to be tuned and worked with to see what works best, even different probability distributions could be tried.
+
+4. Posteriors
+> The consequence of the steps from above.
+
+The posterior is deterministic given a prior, likelihood, and parameters, although it *represents* uncertainty.
+
+Similar to the prior, the posterior is also a probability distribution.
+
+> Given what was believed prior and the data that was just observed, the posterior tells us how plausible each value of the parameter is now.
+
+
+We had some prior belief about a parameter. Say we had three values for $p$ and with a uniform distribution they all had a prior of 1/3.
+
+We now take the result from our likelihood.
+- remember from above this was based on the distribution we thought best reflected our data -> this is the tool that powers our model
+
+Take our 6 waters in 9 globe tosses, we can run the binomial function which gives us likelihoods for each value of $p$.
+
+To find our posteriors, we multiply this likelihood output by the prior (1/3 in this case) which will give us updated plausibilities for each value of $p$, essentially creating a new distribution.
+
+To effectively make this a probability distribution however, we need to normalize each result.
+
+We do this by dividing this product by the sum of all potential values of our product.
+Just think about it and it makes sense. If we have three differently sized parts of something and we want to determine one parts percentage of the whole thing, we gotta it divide by the sum of the parts. This is easy for discrete values since we can just sum, but for continuous values we have to take an integral.
+
+In the continuous case parameters can take on an infinite number of values and not just a few discrete ones. The equation looks like this:
+
+$$
+\text{Posterior}(p) = \frac{P(D \mid p) \cdot P(p)}{\int_0^1 P(D \mid p) \cdot P(p) \, dp}
+$$
+
+The denominator expresses the total plausibility of the data, considering every possible value of $p$, weighted by the prior belief.
