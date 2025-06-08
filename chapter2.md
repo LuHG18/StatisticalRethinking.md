@@ -170,7 +170,7 @@ $$
 
 Which translates to "the likelihood of $p$ given the observations $w$ and the number of data points $n$"
 
-1. Parameters
+2. Parameters
 > Represent our conjectures from before.
 
 The $p$, $w$, and $n$ are all parameters.
@@ -224,3 +224,81 @@ $$
 $$
 
 The denominator expresses the total plausibility of the data, considering every possible value of $p$, weighted by the prior belief.
+
+
+### Section 2.4
+
+We begin looking at various methods of testing parameters.
+
+The first is **Grid Appoximation**
+
+Very simple.
+
+Just pick a set of plausbilities for a parameter along with a prior for each one (probably uniform to start in our examples so far).
+
+Calculate the likelihood value for each of the plausibility values we gave, so we now have a new value in each spot of the "grid".
+
+Then, we multiply the likelihood at each point in the grid by its corresponding prior to get a set of posterior values.
+
+Finally, we standardize them by dividing each point in the grid by the sum of the entire grid.
+
+We can plot the final value (y) at each initial plausbile value (x) to get a graph of our posterior distribution.
+
+This isn't used much in the practical applications because it scales poorly.
+
+Think about the case where we have two parameters. My first thought was OK if we need to handle two parameters we can just have a second grid so it would be two times the amount of approximations made.
+
+This is not the case. 
+
+When we think about multiple parameters, we can say that the params are unrelated before seeing any data. However, once data is introduced the parameters can become correlated.
+
+Because of this we need a joint grid to explore combinations.
+
+A 2D grid would thus require the amount of approximations made before *squared*.
+
+Next option is **Quadratic Approximation**
+
+This stems from the idea we started in the grid approximation where we will ultimately create a posterior distribution that looks something like this:
+
+![alt text](image-7.png)
+
+This distribution doesn't stick out as anything in particular, but if we look closer:
+
+![alt text](image-9.png)
+
+That looks a bit more like a typical Gaussian distribution.
+
+The idea behind the quadratic approach is that we can determine the point in the posterior distribution with the highest likelihood (MAP -> maximum a posteriori).
+
+Then we find the curvature of the (log of the) posterior to determine how "wide" or "narrow" the peak of the distribution is — the standard deviation.
+
+Let's do an example to show this:
+
+1. Step 1: Find the Unnormalized posterior which we've done before
+   1. Unnormalized posterior: $P(p|D) ∝ P(D|p) * P(p)$
+   2. Likelihood: $P(D|p) = \binom{9}{6} p^6 (1-p)^3$
+   3. Prior: $P(p) = 1$
+   4. Unnormalized posterior: $P(p|D) ∝ p^6(1-p)^3$
+2. Step 2: Take the log of the posterior we found in step 1
+   1. $log(P(p|D)) = 6logp+3log(1-p)$ (ignore constants)
+3. Step 3: Find the posterior mode
+   1. Take the derivative of the log expression
+      1. $\frac{6}{p} - \frac{3}{1-p}$
+      2. $p=\frac{2}{3}$ <- the MAP
+4. Find the standard deviation
+   1. Take second derivative of the log expression (not solving this shit lmao)
+   2. plug in our MAP to find the "curvature"
+   3. the variation is found by taking $\frac{1}{|curvature|}$
+      1. inverse relationship -> as the sharpness of the curvature increases, the "wideness" (variation) of the distribution increases
+   4. take the square root to find the standard deviation
+
+
+Finally, we have **Markov chain Monte Carlo**.
+
+Not much detail here.
+
+Premise is that when we have multi-level models with thousands of parameters GA obviously isn't practical. QA works in some cases but often does not due to the inability to define a unified function for the posterior distribution.
+
+Thus, we turn to MCMC which works indirectly by drawing samples from the posterior which gives us the frequencies of various parameter values which correspond to posterior plausibilities.
+
+More detail in Chapter 8.
