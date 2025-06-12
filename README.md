@@ -1,3 +1,3 @@
-![meme](image.png)
+![meme](images/image.png)
 
-![meme2](image-1.png)
+![meme2](images/image-1.png)
