@@ -41,3 +41,16 @@ In the book, the author shows us that
 
 > when just describing the posterior distribution, using the mean, median, and mode is fine. however, if we're making a decision to accept or reject a hypothesis then a point estimate should definitely be supported with the use of the correct loss function.
 
+
+
+### Sampling
+
+Every Bayesian model has the ability to generate new data.
+1. able to simulate observations
+2. estimate parameters from observations
+
+We can now ask the question:
+
+> If this model I built is true, what kind of data would I expect to see?
+
+This is because we have a full posterior distribution we can sample from and then compare to our observed data.
