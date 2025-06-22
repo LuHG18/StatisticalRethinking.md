@@ -14,13 +14,13 @@ The environment is defined as completely as possible to model the real world.
 
 The idea is that as we learn what results actually occur, we begin to "prune" off.
 
-![alt text](image-2.png)
+![alt text](/images/image-2.png)
 
 In the forking forest of marbles example, the author illustrates every possible path if we know that the marbles are BWWW, and then we "prune" impossible paths based on the fact that we pulled BWB.
 
 *Note we are saying that after each pull we put the marble back in the bag and can potentially pull it again. The ordering is most important in this example.
 
-![alt text](image-3.png)
+![alt text](/images/image-3.png)
 
 The author notes that in 3/64 paths we get the desired BWB sequence.
 
@@ -28,7 +28,7 @@ The idea is that based on the setup of our bag, we can assign probabilities to t
 
 Look at this chart and convince yourself how to compute the number of possibilities without drawing the garden.
 
-![alt text](image-4.png)
+![alt text](/images/image-4.png)
 
 At each step:
 1. how many of the four marbles give me that marble in the sequence
@@ -52,7 +52,7 @@ The author makes the point that in this form of updating probability/counts, the
 
 However, this is not always the case for example suppose that blue marbles are worth more than white marbles such that there are three times as many BWWW as BBBW, and two times as many BWWW as BBWW. Thus our counts are updated and the probabilities change:
 
-![alt text](image-5.png)
+![alt text](/images/image-5.png)
 
 **Shifting to Probability**
 
@@ -260,11 +260,11 @@ Next option is **Quadratic Approximation**
 
 This stems from the idea we started in the grid approximation where we will ultimately create a posterior distribution that looks something like this:
 
-![alt text](image-7.png)
+![alt text](/images/image-7.png)
 
 This distribution doesn't stick out as anything in particular, but if we look closer:
 
-![alt text](image-9.png)
+![alt text](/images/image-9.png)
 
 That looks a bit more like a typical Gaussian distribution.
 

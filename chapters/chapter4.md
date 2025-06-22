@@ -58,3 +58,132 @@ The **fourth** step of setting up a model is to take each of the variables from 
 The format typically defines the likelihood first which will show how each variable is involved.
 
 The following lines will define the priors for each variable.
+
+### Section 4.3
+
+Next, we need to understand how to implement the above steps.
+
+After we've defined our variables from step 1, step 2 requires us to determine a likelihood function for the outcome variable.
+
+This task is not as simple as saying we have a Gaussian distribution... the variables of the distribution (mean and variance) must also be modeled correctly.
+
+This is difficult because we are often uncertain about the true shape of our outcome.
+
+SO... we basically admit that we're not going to be able to perfectly represent this likelihood function. Instead we try different values for the mean and variance (or whatever params) and determine their plausibility based on the data. Giving us *another* distribution representing the different values for our params for our actual distribution.
+
+Copying and pasting this excerpt because it explains it best:
+
+> There are an infinite number of possible Gaussian distributions. Some have small means. Others have large means. Some are wide, with a large $\sigma$. Others are narrow. We want our Bayesian machine to consider every possible distribution, each defined by a combination of $\mu$ and $\sigma$, and rank them by posterior plausibility. Posterior plausibility provides a measure of the logical compatibility of each possible distribution with the data and model.
+
+
+EX: Looking at height data for a population, we want to model it.
+
+First we determine our outcome variable to be height. We now need a likelihood function.
+
+> To begin, we skip the predictor variable step since we are just trying to learn about the base model structure of our outcome variable before worrying about prediction. This is common practice. **Once we determine our "true" likelihood, we will express it in terms of our predictors.**
+
+We begin with plotting the raw data:
+
+![alt text](/images/6.png)
+
+Our data looks roughly Normal, but the author cautions to not just go off of what the raw data looks like... we could have multiple distributions within our population (think male and female data etc.).
+
+With that said, we are usually okay to use a Normal distribution due to our comments from section 4.1.
+
+> Recognize we use the Gaussian not just because the raw data "looks Normal", but because of our modeling assumptions and what we know about the data generating process.
+
+We can now set up our model using our knowledge from section 4.2:
+
+$$
+\begin{aligned}
+h_i &\sim \text{Normal}(\mu, \sigma) \\\\
+\mu &\sim \text{Normal}(193, 20) \\\\
+\sigma &\sim \text{Uniform}(0, 50)
+\end{aligned}
+$$
+
+Recognize the first line as our likelihood function for our outcome and the following lines are the priors for our parameters.
+
+The priors use whatever basic knowledge we can give the model (I am 193 cm so I went with this) and then the prior for the standard deviation just needs to be set as a positive value.
+
+**Prior Distribution for $\mu$**
+![alt text](/images/1.png)
+
+**Prior Distribution for $\sigma$**
+![alt text](/images/2.png)
+
+Notice we didn't specify any sort of prior for our outcome variable height, but in a downstream way by specifying these priors that feed into the distriubtion for height, we imply a prior distribution which we can find by sampling.
+
+By taking 10,000 samples from the $\mu$ prior and 10,000 samples from the $\sigma$ prior, and then taking 10,000 samples for the height distribution using these results from the priors.
+
+![alt text](/images/3.png)
+
+
+Now, we can use the priors for our parameters and our data along with Grid Approximation to estimate the posterior distribution over the parameters of the model.
+
+This is a heatmap of our posterior distribution.
+
+![alt text](/images/4.png)
+
+To learn more about our posterior, we can sample from it and do all the stuff we did in [chapter 3](chapter3.md#chapter-3-sampling-the-imaginary).
+
+
+Next, we use MAP ([quadratic approximation](chapter2.md#section-24)) with our priors and likelihood function to get a result for our two parameters.
+
+This code will live in the [practice folder](/practice/ch4.R).
+
+```
+# Define the model
+
+flist <- alist(
+  height ~ dnorm( mu , sigma ) ,
+  mu ~ dnorm( 178 , 20 ) ,
+  sigma ~ dunif( 0 , 50 )
+)
+
+# Fitting a quadratic approximation
+m4.1 <- map( flist , data=d2 )
+
+# Display results
+precis(m4.1)
+```
+
+```
+        mean   sd   5.5%  94.5%
+mu    154.61 0.41 153.95 155.26
+sigma   7.73 0.29   7.27   8.20
+```
+
+However, if we change our prior to have a tighter variation of 0.1, we get an interesting result:
+
+```
+# We cam define and fit the model in one call
+m4.2 <- map(
+  alist(
+    height ~ dnorm( mu , sigma ) ,
+    mu ~ dnorm( 178 , 0.1 ) ,
+    sigma ~ dunif( 0 , 50 )
+  ) ,
+  data=d2 )
+
+precis( m4.2 )
+```
+
+```
+        mean   sd   5.5%  94.5%
+mu    177.86 0.10 177.70 178.02
+sigma  24.52 0.93  23.03  26.00
+```
+
+If we take a look at the distribution of the updated prior:
+
+![alt text](/images/5.png)
+
+By changing the variation, our prior has become a lot more *informative* and without more data, the MAP will fit more closely to what we told it.
+
+> Our confidence in our prior is reflected in the $\sigma$ value.
+
+We sample from a multivariate model like this using a variance-covariance matrix. This is because there is some interaction between the parameters now that we have a joint distribution and we need to quantify the influence of each one.
+
+**Note:**
+There is a distinction to be made about how well the Gaussian models the mean versus the standard deviation. Largely it has to do with the fact that $\sigma \gt 0$ and thus we end up with a right skew (non-normal) distribution. This is all well and good in the GA and MCMC cases because we make no assumptions about the posterior. However, in QA we assume to the posterior is normal in order to do our operation of finding the peak. We typically solve this by modeling $\log{\sigma}$ which belongs in the entire real continuous range and tends to be more normal.
