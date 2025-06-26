@@ -187,3 +187,76 @@ We sample from a multivariate model like this using a variance-covariance matrix
 
 **Note:**
 There is a distinction to be made about how well the Gaussian models the mean versus the standard deviation. Largely it has to do with the fact that $\sigma \gt 0$ and thus we end up with a right skew (non-normal) distribution. This is all well and good in the GA and MCMC cases because we make no assumptions about the posterior. However, in QA we assume to the posterior is normal in order to do our operation of finding the peak. We typically solve this by modeling $\log{\sigma}$ which belongs in the entire real continuous range and tends to be more normal.
+
+
+### Section 4.4
+
+To recap, we've been trying to determine a most representative likelihood of height.
+
+To this point, it has looked like this:
+
+$$
+\text{height}_i \sim \mathcal{N}(\mu, \sigma)
+$$
+
+With that we treated $\mu$ and $\sigma$ as unknown parameters and our goal was to just estimate these values the best we could with the observed data (and our priors).
+
+We were assuming that all centered around a single average height and we wanted to find it.
+
+Now, we introduce a predictor variable with the goal of being able to update our $\mu$ for different people given the value of the predictor — we are using weight.
+
+Thus, our likelihood for height looks like this:
+
+$$
+\text{height}_i \sim \mathcal{N}(\mu_i, \sigma)
+$$
+
+The change looks small but it represents that our $\mu$ is now expressed linearly like this:
+
+$$
+\mu_i = \alpha + \beta \cdot \text{weight}_i
+$$
+
+We have made up these $\alpha$ and $\beta$ parameters to represent this relationship. Parameters can be rearranged in different ways — it is completely up to you. However, by defintion of a linear regression, this is how we represent it. The linear relationship is conventional but is not a requirement.
+
+
+To reflect uncertainty about the slope β, we place a prior on it:
+
+$$
+\beta \sim \mathcal{N}(0, \sigma_\beta)
+$$
+
+Suppose we start with \( \sigma_\beta = 10 \). This wide prior expresses a very weak assumption, allowing $\beta$ to plausibly take on a large range of values, including strong positive or negative relationships.
+
+At \( \sigma_\beta = 1 \), the prior becomes strongly peaked at 0, making large deviations from 0 highly implausible unless there's strong evidence in the data.
+
+This "shrinking" effect causes the model to default toward a conservative belief that there's little to no relationship between weight and height—**unless the data firmly push it otherwise**.
+
+Thus, decreasing \( \sigma_\beta \) builds conservatism directly into the model, acting as a form of regularization that stabilizes estimates.
+
+
+**Guideline for Setting Priors: **
+
+> We can generate data from a prior distribution (the same way we do from the posterior distribution)
+
+A general rule of thumb for determining priors is that the results we get from generating should make sense for our domain: height and weight should be positive etc.
+
+But let it be flexible so we can still learn.
+
+
+To find the contrast between two variables, find the contrast of the distributions.
+
+DO NOT find the mean of each distribution first and then the difference.
+
+
+There is a difference between simulating the mean value for a parameter for an input of the predictor variable and simulating actual possible oberved outcomes based on the given input.
+
+The first gives the expected mean height $\mu$ at each weight.
+
+For each draw of $\alpha$ and $\beta$ it computes the $\mu = \alpha + \beta*\text{weight}$. The result is a grid of means, but we're not introducing randomness at all.
+
+To do the second, for each $\mu$ we grab a $\sigma$ at the same time as teh $\alpha$ and $\beta$. Then, we can use all these values to sample a height from $\mathcal{N}(\mu, \sigma)$.
+
+A solid analogy is that the first is like predicting the average test score for a student based on hours studied.
+
+The second is like generating an actual test score for the student, adding randomness.
